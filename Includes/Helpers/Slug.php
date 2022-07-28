@@ -4,14 +4,23 @@ namespace MultilingualMenuDuplication\Helpers;
 
 class Slug
 {
-    public static function getTranslatedSlug($slug, $destLang)
+    public static function getTranslatedSlug($slug, $destLang, $postType = false)
     {
         global $wpdb;
-        $postIDs = $wpdb->get_results(sprintf(
+        $query = sprintf(
             'SELECT ID FROM %s WHERE post_name = "%s"',
             $wpdb->posts,
             $slug
-        ));
+        );
+
+        if ($postType) {
+            $query .= sprintf(
+                ' AND post_type = "%s"',
+                $postType
+            );
+        }
+        
+        $postIDs = $wpdb->get_results($query);
         
         if (!$postIDs) {
             return $slug;

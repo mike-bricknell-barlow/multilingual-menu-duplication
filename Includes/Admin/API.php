@@ -20,10 +20,6 @@ class API
     public function addToQueue($request)
     {
         $params = $request->get_params();
-        \InvezzPlugin\Log\Log::log(
-            'API request',
-            serialize($request)
-        );
         $sourceLang = sanitize_text_field($params['sourceLang']);
         $destLang = sanitize_text_field($params['destLang']);
         $menuIds = array_map('intval', $params['menus']);

@@ -209,11 +209,6 @@ class Translate
             // Assign the new Main menu to the nav menu location
             $polylangOptions = get_option('polylang');
             $polylangOptions['nav_menus']['invezz-theme']['header_menu'][$destLang] = $newMenuId;
-            \InvezzPlugin\Log\Log::log(
-                'Updated options',
-                serialize($polylangOptions)
-            );
-            
             update_option('polylang', $polylangOptions);
         }
 
@@ -268,13 +263,22 @@ class Translate
         $urlFragments = str_replace("\r", '', $urlFragments);
         $urlFragments = str_replace("//", '/', $urlFragments);
         $urlFragmentsArr = explode('/', $urlFragments);
+
         foreach ($urlFragmentsArr as $key => $urlFragment) {
             if ($urlFragment == "") {
                 unset($urlFragmentsArr[$key]);
                 continue;
             }
+
+            if (strpos($urlFragment, 'review') !== false) {
+                // Reviews archive URL, handle manually
+                $mapping = self::getReviewTranslationMapping();
+                $translatedUrlFragment = $destLang.'/'.$mapping[$destLang].'/';
+                $urlFragmentsArr[$key] = $translatedUrlFragment;
+                continue;
+            }
             
-            $translatedUrlFragment = Slug::getTranslatedSlug($urlFragment, $destLang);
+            $translatedUrlFragment = Slug::getTranslatedSlug($urlFragment, $destLang, 'page');
             $urlFragmentsArr[$key] = $translatedUrlFragment;
         }
 
@@ -284,5 +288,23 @@ class Translate
         foreach ($oldMenuMeta as $metaKey => $metaValue) {
             update_field($metaKey, $metaValue, $newMenuObj);
         }
+    }
+
+    public static function getReviewTranslationMapping()
+    {
+        return [
+            'es' => 'resenas',
+            'it' => 'recensioni',
+            'de' => 'erfahrungen',
+            'fr' => 'avis',
+            'sv' => 'recensioner',
+            'nl' => 'reviews',
+            'pl' => 'recenzje',
+            'no' => 'anmeldelser',
+            'da' => 'anmeldelser',
+            'ms' => 'ulasan',
+            'fi' => 'arvostelut',
+            'pt' => 'analises',
+        ];
     }
 }
