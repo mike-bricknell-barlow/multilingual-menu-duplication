@@ -64,7 +64,7 @@ class API
             exit();
         }
 
-        $now = $now + 30;
+        $now = $now + 120;
         wp_schedule_single_event(
             $now,
             'translate_menu_notify',
