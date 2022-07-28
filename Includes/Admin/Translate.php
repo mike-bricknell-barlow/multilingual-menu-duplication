@@ -199,21 +199,22 @@ class Translate
                 $newMenuId,
                 'nav_menu',
                 [
-                    'name' => $newMenuName,
                     'slug' => sanitize_title($newMenuName),
+                    'name' => $newMenuName,
                 ]
             );
         }
 
         if (strpos($newMenuName, 'Main') !== false) {
             // Assign the new Main menu to the nav menu location
-            $locations = get_theme_mod('nav_menu_locations');
-            $menuKey = ($destLang == 'en') ? 'header_menu' : 'header_menu___'.$destLang;
-            $locations[$menuKey] = $newMenuId;
-            set_theme_mod('nav_menu_locations', $locations);
+            $polylangOptions = get_option('polylang');
+            $polylangOptions['nav_menus']['invezz-theme']['header_menu'][$destLang] = $newMenuId;
+            \InvezzPlugin\Log\Log::log(
+                'Updated options',
+                serialize($polylangOptions)
+            );
             
-            // Flush any caches by re-saving the menu
-            wp_update_nav_menu_object($newMenuId);
+            update_option('polylang', $polylangOptions);
         }
 
         // Clear transients
