@@ -183,18 +183,11 @@ class Translate
             // Assign the new Main menu to the nav menu location
             $locations = get_theme_mod('nav_menu_locations');
             $menuKey = ($destLang == 'en') ? 'header_menu' : 'header_menu___'.$destLang;
-            \InvezzPlugin\Log\Log::log(
-                'Menu locations',
-                serialize($locations)
-            );
-            
             $locations[$menuKey] = $newMenuId;
-            \InvezzPlugin\Log\Log::log(
-                'Altered menu locations',
-                serialize($locations)
-            );
-
             set_theme_mod('nav_menu_locations', $locations);
+            
+            // Flush any caches by re-saving the menu
+            wp_update_nav_menu_object($newMenuId);
         }
 
         // Clear transients
