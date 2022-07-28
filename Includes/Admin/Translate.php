@@ -120,6 +120,32 @@ class Translate
                 continue;
             }
 
+            if ($menuItem->type === 'taxonomy' && function_exists('pll_get_term')) {
+                $translated = pll_get_term($postId, $destLang);
+                $translatedTerm = get_term($translated);
+
+                if (!$translatedTerm) {
+                    continue;
+                }
+
+                $newItemArgs = [
+                    'menu-item-object-id' => $translatedTerm->term_id,
+                    'menu-item-object' => $translatedTerm->taxonomy,
+                    'menu-item-type' => 'taxonomy',
+                    'menu-item-status' => 'publish',
+                ];
+
+                $newMenuItem = wp_update_nav_menu_item(
+                    $newMenuId,
+                    0,
+                    $newItemArgs
+                );
+
+                $newMenuItems[$menuItem->ID] = $newMenuItem;
+                self::menuItemMeta($menuItem, $newMenuItem, $sourceLang, $destLang);
+                continue;
+            }
+
             if (function_exists('pll_get_post')) {
                 $translated = pll_get_post($postId, $destLang);
                 $translatedPost = get_post($translated);
