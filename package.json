@@ -1,0 +1,19 @@
+{
+  "scripts": {
+    "build": "./node_modules/webpack/bin/webpack.js"
+  },
+  "dependencies": {
+    "clean-webpack-plugin": "^4.0.0",
+    "css-loader": "^6.7.1",
+    "glob": "^8.0.3",
+    "ignore-emit-webpack-plugin": "^2.0.6",
+    "mini-css-extract-plugin": "^2.6.1",
+    "sass": "^1.54.0",
+    "sass-loader": "^13.0.2",
+    "uglifyjs-webpack-plugin": "^2.2.0",
+    "webpack": "^5.74.0"
+  },
+  "devDependencies": {
+    "webpack-cli": "^4.10.0"
+  }
+}

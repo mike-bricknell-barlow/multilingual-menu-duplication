@@ -1,0 +1,8 @@
+{
+    "name": "mike-bricknell-barlow/multilingual-menu-duplication",
+    "autoload": {
+        "psr-4": {
+          "MultilingualMenuDuplication\\": "./Includes"
+        }
+    }
+}

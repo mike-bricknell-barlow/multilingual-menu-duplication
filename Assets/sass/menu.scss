@@ -1,0 +1,18 @@
+.mmd {
+    &__language-select, &__menu-select {
+        margin: 0 0 20px;
+
+        &__label {
+            margin: 0 0 10px;
+            display: block;
+        }
+
+        &__multiselect {
+            height: 500px !important;
+        }
+    }
+
+    &__result {
+        display: none;
+    }
+}
