@@ -4,6 +4,7 @@ namespace MultilingualMenuDuplication\Admin;
 
 use MultilingualMenuDuplication\Helpers\Slug;
 use InvezzPlugin\Domain\Languages\GoogleTranslate;
+use InvezzTheme\Domain\Cache\Transients;
 
 class Translate
 {
@@ -195,6 +196,14 @@ class Translate
 
             set_theme_mod('nav_menu_locations', $locations);
         }
+
+        // Clear transients
+        $transientKeys = [
+            'inv-navigation-',
+            'menu-dropdown-',
+        ];
+        
+        Transients::clear($transientKeys);
     }
 
     public static function menuItemMeta($menuItem, $newMenuItem, $sourceLang, $destLang)

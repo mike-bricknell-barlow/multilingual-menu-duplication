@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "build": "./node_modules/webpack/bin/webpack.js"
+    "build": "./node_modules/webpack/bin/webpack.js",
+    "release": "yarn build && zip -r multilingual-menu-duplication.zip ./ -x 'node_modules/*'"
   },
   "dependencies": {
     "clean-webpack-plugin": "^4.0.0",
