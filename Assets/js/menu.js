@@ -1,7 +1,13 @@
 document.addEventListener('DOMContentLoaded', function () {
+    changePageLanguage();
+    
     document.getElementById('translate-menus').addEventListener('click', function () {
         translateMenus();
     });
+
+    document.getElementById('source-language').onchange = function() {
+        changePageLanguage();
+    };
 });
 
 function translateMenus()
@@ -40,4 +46,19 @@ function translateMenus()
     setTimeout(function() {
         document.querySelector('.mmd__result').style.display = 'none';
     }, 3000);
+}
+
+function changePageLanguage()
+{
+    let selectedLanguage = document.getElementById('source-language').value;
+    let siteLanguage = document.querySelector('.pll-filtered-languages .ab-label').attributes['lang'].value.split('-')[0];
+
+    if (selectedLanguage !== siteLanguage) {
+        let url = window.location.href;
+        let params = new URLSearchParams(url.search);
+
+        params.set('lang', selectedLanguage);
+        let newParams = params.toString();
+        window.location.href = '/wp-admin/themes.php?page=multilingual-menu-duplication&'+newParams;
+    }
 }

@@ -5,7 +5,7 @@
     <select name="<?php echo $fieldId ?>" id="<?php echo $fieldId ?>">
         <option value="">Select</option>
         <?php foreach ($languages as $language) : ?>
-            <?php $selected = ($default && $default == $language['slug']) ? 'selected="selected"' : ''; ?>
+            <?php $selected = ($default && pll_current_language() == $language['slug']) ? 'selected="selected"' : ''; ?>
             
             <option value="<?php echo $language['slug'] ?>" <?php echo $selected; ?>>
                 <?php echo $language['name'] ?>
