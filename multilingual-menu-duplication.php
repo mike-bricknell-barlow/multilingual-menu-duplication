@@ -3,7 +3,7 @@
  * Plugin Name:       Multilingual menu duplication
  * Plugin URI:        
  * Description:       Requires a multilanguage plugin such as Polylang. Allows you to duplicate a menu from one language into another, with all menu links being replaced with the appropriate translated page.
- * Version:           1.0.1
+ * Version:           1.0.2
  * Requires at least: 5.0.0
  * Requires PHP:      7.0
  * Author:            Mike Bricknell-Barlow
