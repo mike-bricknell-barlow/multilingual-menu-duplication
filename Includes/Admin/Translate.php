@@ -205,7 +205,7 @@ class Translate
             );
         }
 
-        if (strpos($newMenuName, 'Main') !== false) {
+        if (strpos($newMenuName, 'Main') !== false && strpos($newMenuName, 'Drop') === false) {
             // Assign the new Main menu to the nav menu location
             $polylangOptions = get_option('polylang');
             $polylangOptions['nav_menus']['invezz-theme']['header_menu'][$destLang] = $newMenuId;
