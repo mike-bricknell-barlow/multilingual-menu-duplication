@@ -4,12 +4,15 @@ namespace MultilingualMenuDuplication\Admin;
 
 use \MultilingualMenuDuplication\Helpers\Language;
 use \MultilingualMenuDuplication\Helpers\Menu as MenuHelper;
+use InvezzTheme\Domain\Cache\Transients;
 
 class Menu
 {
     public function __construct()
     {
         add_action('admin_menu', [$this, 'registerMenu']);
+        add_action('admin_bar_menu', [$this, 'clearNavCacheButton'], 10000);
+        add_action('wp_ajax_inv_purge_nav', [$this, 'purgeNav']);
     }
 
     public function registerMenu()
@@ -57,5 +60,38 @@ class Menu
             'Admin'.
             DIRECTORY_SEPARATOR.
             'menu.php';
+    }
+
+    public function clearNavCacheButton($wp_admin_bar)
+    {
+        if (!current_user_can('manage_options')) {
+            return $wp_admin_bar;
+        }
+
+        $wp_admin_bar->add_menu([
+            'id' => 'inv_purge_nav',
+            'parent' => 'cache',
+            'group' => null,
+            'title' => 'Purge nav menus',
+            'href'  => admin_url('/'),
+            'meta' => [
+                'class' => 'ajax',
+            ]
+        ]);
+        
+        return $wp_admin_bar;
+    }
+
+    public function purgeNav()
+    {
+        $transientKeys = [
+            'inv-navigation-',
+            'menu-dropdown-',
+        ];
+        
+        Transients::clear($transientKeys);
+
+        echo 'Success';
+        die();
     }
 }
