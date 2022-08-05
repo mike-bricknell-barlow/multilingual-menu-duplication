@@ -164,7 +164,7 @@ class Translate
                 /**
                  * If the old menu item has a parent, get the new parent item's ID
                  * from the new items array
-                 * 
+                 *
                  * Disable adding parents for all except secondary drop or main menus
                  */
                 if (
@@ -205,10 +205,21 @@ class Translate
             );
         }
 
-        if (strpos($newMenuName, 'Main') !== false && strpos($newMenuName, 'Drop') === false) {
+        if (strpos($newMenuName, 'Main') !== false &&
+            strpos($newMenuName, 'Drop') === false &&
+            strpos($newMenuName, 'AMP') === false) {
             // Assign the new Main menu to the nav menu location
             $polylangOptions = get_option('polylang');
             $polylangOptions['nav_menus']['invezz-theme']['header_menu'][$destLang] = $newMenuId;
+            update_option('polylang', $polylangOptions);
+        }
+
+        if ((strpos($newMenuName, 'Main') !== false || strpos($newMenuName, 'Menu') !== false) &&
+            strpos($newMenuName, 'Drop') === false &&
+            strpos($newMenuName, 'AMP') !== false) {
+            // Assign the new AMP Main menu to the nav menu location
+            $polylangOptions = get_option('polylang');
+            $polylangOptions['nav_menus']['invezz-theme']['amp-menu'][$destLang] = $newMenuId;
             update_option('polylang', $polylangOptions);
         }
 
