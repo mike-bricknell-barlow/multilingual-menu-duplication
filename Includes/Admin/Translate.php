@@ -122,9 +122,14 @@ class Translate
 
             if ($menuItem->type === 'taxonomy' && function_exists('pll_get_term')) {
                 $translated = pll_get_term($postId, $destLang);
+
+				if (!$translated) {
+		            continue;
+	            }
+
                 $translatedTerm = get_term($translated);
 
-                if (!$translatedTerm) {
+                if (!$translatedTerm || is_a($translatedTerm, 'WP_Error')) {
                     continue;
                 }
 
@@ -134,6 +139,22 @@ class Translate
                     'menu-item-type' => 'taxonomy',
                     'menu-item-status' => 'publish',
                 ];
+
+	            /**
+	             * If the old menu item has a parent, get the new parent item's ID
+	             * from the new items array
+	             *
+	             * Disable adding parents for all except secondary drop or main menus
+	             */
+	            if (
+		            (
+			            (strpos($newMenuName, 'Drop') !== false && strpos($newMenuName, 'Secondary') !== false) ||
+			            strpos($newMenuName, 'Main') !== false
+		            ) &&
+		            $menuItem->menu_item_parent &&
+		            isset($newMenuItems[$menuItem->menu_item_parent])) {
+		            $newItemArgs['menu-item-parent-id'] = $newMenuItems[$menuItem->menu_item_parent];
+	            }
 
                 $newMenuItem = wp_update_nav_menu_item(
                     $newMenuId,
@@ -214,7 +235,7 @@ class Translate
             update_option('polylang', $polylangOptions);
         }
 
-        if ((strpos($newMenuName, 'Main') !== false || strpos($newMenuName, 'Menu') !== false) &&
+        if (strpos($newMenuName, 'Main') !== false &&
             strpos($newMenuName, 'Drop') === false &&
             strpos($newMenuName, 'AMP') !== false) {
             // Assign the new AMP Main menu to the nav menu location
