@@ -20,7 +20,7 @@ class Menu
         add_theme_page(
             'Multi-lingual menu duplicator',
             'Multi-lingual menu duplicator',
-            'manage_options',
+            'ml_menu_duplicator',
             'multilingual-menu-duplication',
             [$this, 'outputMenuContent']
         );
