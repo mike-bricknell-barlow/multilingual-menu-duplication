@@ -3,11 +3,14 @@
 namespace MultilingualMenuDuplication\Admin;
 
 use MultilingualMenuDuplication\Helpers\Slug;
+use MultilingualMenuDuplication\Helpers\Internal;
 use InvezzPlugin\Domain\Languages\GoogleTranslate;
 use InvezzTheme\Domain\Cache\Transients;
 
 class Translate
 {
+	public static string $parentLanguage;
+
     public static function translateMenu($sourceLang, $destLang, $menuId)
     {
         if (!$sourceLang || !$destLang || !$menuId) {
@@ -49,6 +52,13 @@ class Translate
         // Create the new nav menu
         $newMenuId = wp_create_nav_menu($newMenuName);
 
+	    /**
+	     * If there's a parent language assigned, this is a same-language translation
+	     * Items will be duplicated rather than translated
+	     */
+	    $term = get_term_by('slug', $destLang, 'language');
+	    self::$parentLanguage = get_term_meta($term->term_id, 'lang_parent', true);
+
         // Copy menu meta fields
         self::menuMeta($menuObj, $newMenuId, $sourceLang, $destLang);
 
@@ -64,7 +74,8 @@ class Translate
             if ($menuItem->type === 'custom') {
                 $itemUrl = $menuItem->url;
                 
-                if ($itemUrl !== '#') {
+                if ($itemUrl !== '#' && Internal::isInternalLink($itemUrl)) {
+					$original = $itemUrl;
                     $itemUrl = str_replace(get_home_url(), '', $itemUrl);
                     $itemUrl = str_replace('https://invezz.com', '', $itemUrl);
                     $urlArr = explode('/', $itemUrl);
@@ -75,11 +86,15 @@ class Translate
                     }
                     
                     $itemUrl = Slug::getTranslatedSlug($lastFragment, $destLang);
+
+					if ($itemUrl == $lastFragment) {
+						$itemUrl = $original;
+					}
                 }
 
                 $itemTitle = $menuItem->title;
 
-                if ($itemTitle != 'INV_MORE') {
+                if ($itemTitle != 'INV_MORE' && !self::$parentLanguage) {
                     $itemTitle = $translator->fetchTranslation($itemTitle);
                 }
                 
@@ -279,13 +294,13 @@ class Translate
         $oldMenuMeta = get_fields($menuObj);
         $translator = new GoogleTranslate($destLang);
 
-        if ($oldMenuMeta['submenu_heading'] != '') {
+        if ($oldMenuMeta['submenu_heading'] != '' && !self::$parentLanguage) {
             $oldMenuMeta['submenu_heading'] = $translator->fetchTranslation(
                 $oldMenuMeta['submenu_heading']
             );
         }
         
-        if ($oldMenuMeta['on_page_nav_description'] != '') {
+        if ($oldMenuMeta['on_page_nav_description'] != '' && !self::$parentLanguage) {
             $oldMenuMeta['on_page_nav_description'] = $translator->fetchTranslation(
                 $oldMenuMeta['on_page_nav_description']
             );
@@ -302,10 +317,12 @@ class Translate
                 continue;
             }
 
-            if (strpos($urlFragment, 'review') !== false) {
+            if (str_contains($urlFragment, 'review')) {
                 // Reviews archive URL, handle manually
                 $mapping = self::getReviewTranslationMapping();
-                $translatedUrlFragment = $destLang.'/'.$mapping[$destLang].'/';
+
+				$mappingKey = (self::$parentLanguage) ?: $mapping[$destLang];
+                $translatedUrlFragment = $destLang.'/'.$mappingKey.'/';
                 $urlFragmentsArr[$key] = $translatedUrlFragment;
                 continue;
             }
@@ -324,19 +341,20 @@ class Translate
 
     public static function getReviewTranslationMapping()
     {
-        return [
-            'es' => 'resenas',
-            'it' => 'recensioni',
-            'de' => 'erfahrungen',
-            'fr' => 'avis',
-            'sv' => 'recensioner',
-            'nl' => 'reviews',
-            'pl' => 'recenzje',
-            'no' => 'anmeldelser',
-            'da' => 'anmeldelser',
-            'ms' => 'ulasan',
-            'fi' => 'arvostelut',
-            'pt' => 'analises',
-        ];
+		return [
+			'en' => 'reviews',
+			'es' => 'resenas',
+			'it' => 'recensioni',
+			'de' => 'erfahrungen',
+			'fr' => 'avis',
+			'sv' => 'recensioner',
+			'nl' => 'reviews',
+			'pl' => 'recenzje',
+			'no' => 'anmeldelser',
+			'da' => 'anmeldelser',
+			'ms' => 'ulasan',
+			'fi' => 'arvostelut',
+			'pt' => 'analises',
+		];
     }
 }

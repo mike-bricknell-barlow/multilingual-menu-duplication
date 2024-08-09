@@ -28,8 +28,6 @@ class Slug
 
         $postId = $postIDs[0]->ID;
         $translatedPostId = pll_get_post($postId, $destLang);
-        $translatedPostSlug = get_the_permalink($translatedPostId);
-        $return = str_replace(get_home_url(), '', $translatedPostSlug);
-        return $return;
+        return get_the_permalink($translatedPostId);
     }
 }
