@@ -6,7 +6,7 @@ use \MultilingualMenuDuplication\Admin\API;
 use \MultilingualMenuDuplication\Admin\Menu;
 use \MultilingualMenuDuplication\Admin\Schedule;
 use \MultilingualMenuDuplication\Admin\Translate;
-
+use \MultilingualMenuDuplication\CLI\Test;
 class Bootstrap
 {
     public function __construct()
@@ -16,5 +16,6 @@ class Bootstrap
         new Menu();
         new Schedule();
         new Translate();
+		new Test();
     }
 }
