@@ -17,13 +17,10 @@ class Schedule
         Translate::translateMenu($sourceLang, $destLang, $menuIds);
     }
 
-    public function notifyComplete($count, $user)
+    public function notifyComplete($count, $userId)
     {
+		$user = get_user_by('id', $userId);
         $mailTo = $user->user_email;
-        \InvezzPlugin\Log\Log::log(
-            'User object',
-            serialize($user)
-        );
         
         $subject = sprintf(
             '%s menus successfully translated.',
