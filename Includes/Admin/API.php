@@ -31,48 +31,28 @@ class API
         $totalMenus = count($menuIds);
         $user = wp_get_current_user();
 
-        $date = new \DateTime();
-        $now = $date->getTimestamp();
-
         foreach ($menuIds as $menuId) {
-            if (wp_next_scheduled('translate_menu', [
-                $sourceLang,
-                $destLang,
-                $menuId,
-            ])) {
-                // Already scheduled
-                continue;
-            }
-    
-            $now = $now + 10;
-            wp_schedule_single_event(
-                $now,
-                'translate_menu',
-                [
-                    $sourceLang,
-                    $destLang,
-                    $menuId,
-                ]
-            );
+			as_schedule_single_action(
+		        time() + 10,
+		        'translate_menu',
+		        [
+			        'sourceLang' => $sourceLang,
+			        'destLang' => $destLang,
+			        'menuId' => $menuId,
+		        ],
+		        'menu_translations'
+	        );
         }
 
-        // Schedule the email notification on completion
-        if (wp_next_scheduled('translate_menu_notify', [
-            $totalMenus,
-            $user,
-        ])) {
-            exit();
-        }
-
-        $now = $now + 120;
-        wp_schedule_single_event(
-            $now,
-            'translate_menu_notify',
-            [
-                $totalMenus,
-                $user,
-            ]
-        );
+	    as_schedule_single_action(
+		    time() + 120,
+		    'translate_menu_notify',
+		    [
+			    'totalMenus' => $totalMenus,
+			    'userId' => $user->ID,
+		    ],
+		    'menu_translations'
+	    );
 
         exit();
     }
